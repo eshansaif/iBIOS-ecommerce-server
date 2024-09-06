@@ -93,6 +93,42 @@ app.post("/auth/login", async (req, res) => {
   res.send({ token });
 });
 
+// =============== Product Management ===============
+// Create Product
+app.post("/product", async (req, res) => {
+  const product = req.body;
+  await productsCollection.insertOne(product);
+  res.send({ message: "Product created successfully", product });
+});
+
+// Get all Products
+app.get("/products", async (req, res) => {
+  const products = await productsCollection.find().toArray();
+  res.send(products);
+});
+
+// Update Product
+app.patch("/products/:id", async (req, res) => {
+  const { id } = req.params;
+  const updatedProduct = req.body;
+
+  await productsCollection.updateOne(
+    { _id: new ObjectId(id) },
+    { $set: updatedProduct }
+  );
+
+  res.send({ message: "Product updated successfully" });
+});
+
+// Delete Product
+app.delete("/products/:id", async (req, res) => {
+  const { id } = req.params;
+
+  await productsCollection.deleteOne({ _id: new ObjectId(id) });
+
+  res.send({ message: "Product deleted successfully" });
+});
+
 // Test API
 app.get("/", (req, res) => {
   res.send("Welcome to the Server");
